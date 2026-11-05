@@ -51,7 +51,11 @@
 </head>
 <body class="bg-[#faf8f3] text-slate-800 antialiased">
 <div id="errbar" style="display:none;position:fixed;left:8px;right:8px;top:8px;z-index:100;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:12px;padding:10px 12px;font-size:12px;word-break:break-all"></div>
-<script>window.addEventListener('error',function(e){var b=document.getElementById('errbar');if(!b)return;b.style.display='block';b.textContent='載入錯誤：'+e.message+(e.lineno?'（第'+e.lineno+'行）':'');});</script>
+<script>
+window.showErr=function(m){var b=document.getElementById('errbar');if(!b)return;b.style.display='block';b.textContent='載入錯誤：'+m;};
+window.addEventListener('error',function(e){window.showErr(e.message+(e.lineno?'（第'+e.lineno+'行）':''));});
+</script>
+<noscript><div style="padding:16px;color:#b91c1c;background:#fef2f2">此頁面需要開啟 JavaScript 才能使用。</div></noscript>
 
 <header class="bg-[#FFD84D]">
   <div class="max-w-2xl mx-auto px-4 pt-6 pb-12">
@@ -87,7 +91,7 @@
   </div>
 </nav>
 
-<main id="menu" class="max-w-2xl mx-auto px-4 pt-4 pb-4"></main>
+<main id="menu" class="max-w-2xl mx-auto px-4 pt-4 pb-4"><div id="boot" class="text-center text-slate-400 py-16 text-sm leading-relaxed">⏳ 菜單載入中…<br>若一直停在這裡，代表程式沒有執行，請截圖給我</div></main>
 
 <div class="max-w-2xl mx-auto px-4 pb-36 text-xs text-slate-400 space-y-1">
   <p><span class="tag tag-rec">推</span> 店家推薦　<span class="tag tag-cold">❄ 僅冷飲</span> 不提供溫熱</p>
@@ -169,4 +173,305 @@ const ICE   = [{n:'溫熱',p:'',hot:true},{n:'去冰',p:'0%'},{n:'微冰',p:'40%
 const I = (name,m,l,f='') => ({name,m,l,rec:f.includes('r'),cold:f.includes('c')});
 const MENU = [
   {id:'tea', name:'找好茶', en:'Flavored Tea', items:[
-    I('茉莉綠茶',30,35), I('阿薩姆紅茶',30,35), I
+    I('茉莉綠茶',30,35), I('阿薩姆紅茶',30,35), I('四季春青茶',30,35,'r'), I('黃金烏龍',30,35),
+    I('珍波椰青茶',35,45,'r'), I('波霸紅茶',35,45), I('波霸綠茶',35,45),
+    I('燕麥紅茶',35,45), I('燕麥綠茶',35,45), I('微檸檬紅茶',35,45), I('微檸檬青茶',35,45),
+    I('麵茶紅茶',40,55), I('麵茶烏龍',40,55), I('檸檬綠茶',40,55), I('梅の綠茶',40,55),
+    I('8冰綠茶',40,55,'r'), I('情人茶',40,55,'r'),
+    I('多多綠茶',40,55,'c'), I('蜂蜜綠茶',40,55,'c'),
+    I('旺來紅茶',40,55,'r'), I('旺來青茶',40,55,'r'), I('柚子紅茶',40,55), I('柚子烏龍',40,55)
+  ]},
+  {id:'milk', name:'找奶茶', en:'Classic Milk Tea', items:[
+    I('奶茶',40,55,'r'), I('奶綠',40,55), I('烏龍奶',40,55,'r'), I('椰果奶茶',40,55),
+    I('珍珠奶茶',40,55), I('波霸奶茶',40,55,'r'), I('燕麥奶茶',40,55,'r'),
+    I('蜂蜜奶茶',50,65,'c'), I('布丁奶茶',50,65),
+    I('紅茶瑪奇朵',40,55,'r'), I('青茶瑪奇朵',40,55), I('阿華田',40,55)
+  ]},
+  {id:'latte', name:'找拿鐵', en:'Tea Latte', items:[
+    I('紅茶拿鐵',50,65,'r'), I('綠茶拿鐵',50,65), I('重焙烏龍拿鐵',50,65,'r'),
+    I('珍珠紅茶拿鐵',50,65,'r'), I('波霸紅茶拿鐵',50,65), I('燕麥紅茶拿鐵',50,65,'r'),
+    I('波霸綠茶拿鐵',50,65), I('燕麥重焙烏龍拿鐵',50,65,'r'), I('布丁紅茶拿鐵',55,75),
+    I('阿華田拿鐵',50,65), I('燕麥阿華田拿鐵',50,65), I('麵茶紅茶拿鐵',55,75)
+  ]},
+  {id:'fresh', name:'找新鮮', en:'Fresh Juice', items:[
+    I('蜜茶',40,55,'c'), I('8冰茶',40,55), I('柚子茶',40,55), I('檸檬汁',50,65),
+    I('金桔檸檬',50,65,'r'), I('檸檬梅汁',50,65,'r'), I('檸檬多多',55,75,'c')
+  ]},
+  {id:'ice', name:'找冰淇淋', en:'Ice Cream', items:[
+    I('冰淇淋紅茶',40,55,'c'), I('芒果青',40,55,'cr'), I('荔枝烏龍',40,55,'cr'),
+    I('冰淇淋奶茶',50,65,'c'), I('冰淇淋紅茶拿鐵',55,75,'c'), I('冰淇淋麵茶紅茶拿鐵',60,80,'c')
+  ]},
+];
+const ITEMS = {};
+MENU.forEach(c => c.items.forEach((it,i) => { it.id = c.id+'-'+i; ITEMS[it.id] = it; }));
+
+/* ===== 工具 ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+let toastTimer;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+const topName = id => (TOPPINGS.find(t => t.id===id)||{}).name || id;
+const topPrice = id => (TOPPINGS.find(t => t.id===id)||{}).price || 0;
+
+/* ===== 狀態 ===== */
+let cart = store.get('dk_cart', []);
+if (!Array.isArray(cart)) cart = [];
+let activeCat = 'all';
+let draft = null;
+
+const groupEl = $('#group'), nameEl = $('#name'), searchEl = $('#search');
+groupEl.value = store.get('dk_group','');
+nameEl.value  = store.get('dk_name','');
+groupEl.addEventListener('input', () => { store.set('dk_group', groupEl.value.trim()); groupEl.classList.remove('err'); refreshCartIfOpen(); });
+nameEl.addEventListener('input',  () => { store.set('dk_name',  nameEl.value.trim());  nameEl.classList.remove('err');  refreshCartIfOpen(); });
+searchEl.addEventListener('input', renderMenu);
+
+const totalCups  = () => cart.reduce((s,c) => s + c.qty, 0);
+const totalPrice = () => cart.reduce((s,c) => s + c.unit * c.qty, 0);
+const cartCount  = id => cart.filter(c => c.itemId===id).reduce((s,c) => s + c.qty, 0);
+
+/* ===== 分類 & 菜單 ===== */
+function renderTabs(){
+  const tabs = [{id:'all',name:'全部'},{id:'rec',name:'🔥 推薦'}, ...MENU.map(c => ({id:c.id,name:c.name}))];
+  $('#tabs').innerHTML = tabs.map(t => `<button class="tab ${t.id===activeCat?'on':''}" data-act="tab" data-cat="${t.id}">${t.name}</button>`).join('');
+}
+
+function cardHtml(it){
+  const n = cartCount(it.id);
+  return `<button type="button" data-item="${it.id}" class="card item w-full text-left p-3.5 flex items-center gap-3">
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span class="font-semibold text-[15px]">${esc(it.name)}</span>
+        ${it.rec ? '<span class="tag tag-rec">推</span>' : ''}
+        ${it.cold ? '<span class="tag tag-cold">❄ 僅冷飲</span>' : ''}
+      </div>
+      <div class="mt-1.5 flex gap-1.5 text-xs"><span class="price">M $${it.m}</span><span class="price">L $${it.l}</span></div>
+    </div>
+    <div class="relative shrink-0">${n ? `<span class="badge">${n}</span>` : ''}<span class="add-btn">＋</span></div>
+  </button>`;
+}
+
+function renderMenu(){
+  const q = searchEl.value.trim();
+  let html = '';
+  for (const cat of MENU){
+    const items = cat.items.filter(it =>
+      (activeCat==='all' || activeCat===cat.id || (activeCat==='rec' && it.rec)) &&
+      (!q || it.name.includes(q)));
+    if (!items.length) continue;
+    html += `<section class="mb-6">
+      <h2 class="flex items-baseline gap-2 mb-2.5 px-1"><span class="text-lg font-extrabold text-sky-900">${cat.name}</span><span class="text-xs font-semibold text-slate-400 uppercase">${cat.en}</span></h2>
+      <div class="grid gap-2.5 sm:grid-cols-2">${items.map(cardHtml).join('')}</div>
+    </section>`;
+  }
+  $('#menu').innerHTML = html || `<div class="text-center text-slate-400 py-16">找不到符合的飲料 🥲</div>`;
+}
+
+/* ===== 彈出面板 ===== */
+function openSheet(el){
+  $('#overlay').classList.add('show'); el.classList.add('open'); document.body.classList.add('lock');
+}
+function closeSheets(){
+  document.querySelectorAll('.sheet.open').forEach(s => s.classList.remove('open'));
+  $('#overlay').classList.remove('show'); document.body.classList.remove('lock');
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeSheets(); });
+
+/* ===== 飲料選項 ===== */
+const unitPrice = d => (d.size==='M' ? d.item.m : d.item.l) + [...d.tops].reduce((s,id) => s + topPrice(id), 0);
+
+function chip(group, value, label, sub, on, disabled){
+  return `<button type="button" class="chip ${on?'on':''}" data-pick="${group}" data-v="${value}" ${disabled?'disabled':''}>${label}${sub?`<small>${sub}</small>`:''}</button>`;
+}
+function section(title, inner){
+  return `<div class="mb-5"><h3 class="text-sm font-bold text-slate-500 mb-2">${title}</h3>${inner}</div>`;
+}
+function renderOpts(){
+  const d = draft, it = d.item;
+  const size  = section('容量', `<div class="chips">${chip('size','M','中杯 M','$'+it.m,d.size==='M')}${chip('size','L','大杯 L','$'+it.l,d.size==='L')}</div>`);
+  const sugar = section('甜度', `<div class="chips">${SUGAR.map(s => chip('sugar',s.n,s.n,s.p,d.sugar===s.n)).join('')}</div>`);
+  const ice   = section('冰量' + (it.cold ? ' <span class="font-normal text-sky-600">❄ 此品項不提供溫熱</span>' : ''),
+    `<div class="chips">${ICE.map(s => chip('ice',s.n,s.n,s.p,d.ice===s.n, it.cold && s.hot)).join('')}</div>`);
+  const tops  = section('加料 <span class="font-normal text-slate-400">（可複選）</span>',
+    `<div class="chips">${TOPPINGS.map(t => chip('top',t.id,t.name,t.price ? '+$'+t.price : '免費',d.tops.has(t.id))).join('')}</div>`);
+  $('#opts').innerHTML = size + sugar + ice + tops;
+  $('#dQty').textContent = d.qty;
+  $('#dPrice').textContent = '$' + unitPrice(d) * d.qty;
+}
+function openItem(id){
+  const it = ITEMS[id]; if (!it) return;
+  draft = {item:it, size:'M', sugar:'全糖', ice:'正常冰', tops:new Set(), qty:1};
+  $('#sheetTitle').textContent = it.name;
+  $('#sheetSub').textContent = `中杯 $${it.m}　／　大杯 $${it.l}`;
+  $('#note').value = '';
+  renderOpts();
+  $('#sheetBody').scrollTop = 0;
+  openSheet($('#itemSheet'));
+}
+function addToCart(){
+  const d = draft; if (!d) return;
+  const tops = [...d.tops].sort();
+  const note = $('#note').value.trim();
+  const key = [d.item.id, d.size, d.sugar, d.ice, tops.join(','), note].join('|');
+  const ex = cart.find(c => c.key===key);
+  if (ex) ex.qty = Math.min(99, ex.qty + d.qty);
+  else cart.push({key, itemId:d.item.id, name:d.item.name, size:d.size, sugar:d.sugar, ice:d.ice, tops, note, qty:d.qty, unit:unitPrice(d)});
+  closeSheets();
+  toast(`已加入：${d.item.name} ×${d.qty}`);
+  draft = null;
+  updateAll();
+}
+
+/* ===== 訂單 ===== */
+function buildMessage(){
+  const g = groupEl.value.trim(), n = nameEl.value.trim();
+  const L = [];
+  L.push('🧋 50嵐 團購訂單');
+  L.push('團體編號：' + (g || '（未填）'));
+  L.push('訂購人：' + (n || '（未填）'));
+  L.push('────────────');
+  cart.forEach((c,i) => {
+    const parts = [`${c.sugar}`, `${c.ice}`];
+    if (c.tops.length) parts.push('加' + c.tops.map(topName).join('、'));
+    if (c.note) parts.push('備註:' + c.note);
+    L.push(`${i+1}. ${c.name}(${c.size}) ${parts.join('／')} ×${c.qty}　$${c.unit*c.qty}`);
+  });
+  L.push('────────────');
+  L.push(`共 ${totalCups()} 杯`);
+  L.push(`總金額：$${totalPrice()}`);
+  return L.join('\n');
+}
+
+function lineHtml(c,i){
+  const opts = [c.sugar, c.ice, ...(c.tops.length ? ['加' + c.tops.map(topName).join('、')] : [])].join('／');
+  return `<div class="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
+    <div class="min-w-0 flex-1">
+      <div class="font-semibold">${esc(c.name)} <span class="text-xs font-bold text-sky-700 bg-sky-50 rounded px-1.5 py-0.5">${c.size}</span></div>
+      <div class="text-xs text-slate-500 mt-0.5">${esc(opts)}${c.note ? '｜備註：' + esc(c.note) : ''}</div>
+      <div class="text-sm font-bold text-sky-700 mt-1">$${c.unit*c.qty} <span class="text-xs font-medium text-slate-400">（$${c.unit}／杯）</span></div>
+    </div>
+    <div class="flex flex-col items-end gap-2">
+      <div class="stepper">
+        <button data-act="cDec" data-i="${i}" aria-label="減少">−</button><span>${c.qty}</span><button data-act="cInc" data-i="${i}" aria-label="增加">＋</button>
+      </div>
+      <button data-act="cDel" data-i="${i}" class="text-xs text-red-500 font-semibold">移除</button>
+    </div>
+  </div>`;
+}
+
+let clearArmed = false, clearTimer;
+function renderCart(){
+  const body = $('#cartBody');
+  if (!cart.length){
+    body.innerHTML = `<div class="py-14 text-center text-slate-400"><div class="text-4xl mb-2">🧋</div>還沒有飲料，回去挑一杯吧</div>`;
+    $('#cartFoot').style.display = 'none';
+    return;
+  }
+  $('#cartFoot').style.display = '';
+  const g = groupEl.value.trim(), n = nameEl.value.trim();
+  const warn = (!g || !n)
+    ? `<button data-act="editInfo" class="w-full text-left text-sm font-semibold text-amber-700 bg-amber-50 rounded-xl px-3 py-2.5 mb-3">⚠️ 請先填寫${!g?'團體編號':''}${!g&&!n?'與':''}${!n?'訂購人姓名':''}（點此前往）</button>`
+    : `<div class="text-sm text-slate-500 mb-3">團體編號 <b class="text-slate-800">${esc(g)}</b>　訂購人 <b class="text-slate-800">${esc(n)}</b></div>`;
+  body.innerHTML = `${warn}
+    <div>${cart.map(lineHtml).join('')}</div>
+    <div class="flex items-center justify-between mt-4 mb-2">
+      <h3 class="text-sm font-bold text-slate-500">LINE 訊息預覽</h3>
+      <button data-act="clear" class="text-xs font-semibold text-red-500">${clearArmed ? '再按一次確認清空' : '清空訂單'}</button>
+    </div>
+    <textarea id="msg" readonly rows="${Math.min(14, cart.length + 8)}" class="field !text-sm leading-relaxed">${esc(buildMessage())}</textarea>`;
+  $('#cartTotal').textContent = '$' + totalPrice();
+}
+function refreshCartIfOpen(){ if ($('#cartSheet').classList.contains('open')) renderCart(); }
+
+function renderBar(){
+  const c = totalCups();
+  $('#barLabel').textContent = c ? `🛒 ${c} 杯｜查看訂單` : '🛒 尚未選購';
+  $('#barTotal').textContent = '$' + totalPrice();
+}
+function updateAll(){
+  store.set('dk_cart', cart);
+  renderMenu(); renderBar(); refreshCartIfOpen();
+}
+
+/* ===== 傳送 ===== */
+function ensureInfo(){
+  const g = groupEl.value.trim(), n = nameEl.value.trim();
+  if (g && n) return true;
+  closeSheets();
+  (!g ? groupEl : nameEl).classList.add('err');
+  if (!g) groupEl.classList.add('err'); if (!n) nameEl.classList.add('err');
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(() => (!g ? groupEl : nameEl).focus({preventScroll:true}), 350);
+  toast('請先填寫團體編號與姓名');
+  return false;
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.cssText = 'position:fixed;opacity:0;top:0';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+    let ok = false; try{ ok = document.execCommand('copy'); }catch(_){}
+    ta.remove(); return ok;
+  }
+}
+
+/* ===== 事件 ===== */
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-item],[data-pick],[data-act]');
+  if (!el) return;
+
+  if (el.dataset.item){ openItem(el.dataset.item); return; }
+
+  if (el.dataset.pick){
+    const k = el.dataset.pick, v = el.dataset.v;
+    if (k==='size' || k==='sugar' || k==='ice') draft[k] = v;
+    else if (k==='top'){ draft.tops.has(v) ? draft.tops.delete(v) : draft.tops.add(v); }
+    renderOpts(); return;
+  }
+
+  const i = +el.dataset.i;
+  switch (el.dataset.act){
+    case 'close': closeSheets(); break;
+    case 'tab': activeCat = el.dataset.cat; renderTabs(); renderMenu(); window.scrollTo({top:0}); break;
+    case 'dDec': draft.qty = Math.max(1, draft.qty - 1); renderOpts(); break;
+    case 'dInc': draft.qty = Math.min(99, draft.qty + 1); renderOpts(); break;
+    case 'add': addToCart(); break;
+    case 'openCart': renderCart(); openSheet($('#cartSheet')); break;
+    case 'cInc': cart[i].qty = Math.min(99, cart[i].qty + 1); updateAll(); break;
+    case 'cDec': cart[i].qty = Math.max(1, cart[i].qty - 1); updateAll(); break;
+    case 'cDel': cart.splice(i, 1); updateAll(); break;
+    case 'clear':
+      if (!clearArmed){
+        clearArmed = true; renderCart();
+        clearTimer = setTimeout(() => { clearArmed = false; refreshCartIfOpen(); }, 3000);
+      } else {
+        clearTimeout(clearTimer); clearArmed = false; cart = []; updateAll(); toast('已清空訂單');
+      }
+      break;
+    case 'editInfo': ensureInfo(); break;
+    case 'copy':
+      if (!ensureInfo()) break;
+      toast(await copyText(buildMessage()) ? '已複製訊息 ✓' : '複製失敗，請長按訊息框手動複製');
+      break;
+    case 'line':
+      if (!ensureInfo()) break;
+      window.open('https://line.me/R/msg/text/?' + encodeURIComponent(buildMessage()), '_blank', 'noopener');
+      break;
+  }
+});
+
+/* ===== 初始化 ===== */
+[renderTabs, renderMenu, renderBar].forEach(function(f){
+  try{ f(); }catch(err){ window.showErr(f.name + ' 失敗：' + err.message); }
+});
+</script>
+</body>
+</html>
