@@ -50,6 +50,8 @@
 </style>
 </head>
 <body class="bg-[#faf8f3] text-slate-800 antialiased">
+<div id="errbar" style="display:none;position:fixed;left:8px;right:8px;top:8px;z-index:100;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:12px;padding:10px 12px;font-size:12px;word-break:break-all"></div>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('errbar');if(!b)return;b.style.display='block';b.textContent='載入錯誤：'+e.message+(e.lineno?'（第'+e.lineno+'行）':'');});</script>
 
 <header class="bg-[#FFD84D]">
   <div class="max-w-2xl mx-auto px-4 pt-6 pb-12">
@@ -89,7 +91,7 @@
 
 <div class="max-w-2xl mx-auto px-4 pb-36 text-xs text-slate-400 space-y-1">
   <p><span class="tag tag-rec">推</span> 店家推薦　<span class="tag tag-cold">❄ 僅冷飲</span> 不提供溫熱</p>
-  <p>價格依 2026/03 菜單整理；加料價格請於程式內 TOPPINGS 調整。</p>
+  <p>價格依 2026/03 菜單整理；加料免費。</p>
 </div>
 
 <!-- 底部訂單列 -->
@@ -153,12 +155,12 @@
 
 <script>
 /* ===== 設定 ===== */
-// 加料價格：菜單圖未標示，預設每項 $10，請依店家實際價格修改
+// 加料價格：老闆說加料免費，所以全部是 0；若日後要收費，改這裡的 price 即可
 const TOPPINGS = [
-  {id:'bubble', name:'波霸', price:10},
-  {id:'mini',   name:'珍珠', price:10},
-  {id:'oat',    name:'燕麥', price:10},
-  {id:'coconut',name:'椰果', price:10},
+  {id:'bubble', name:'波霸', price:0},
+  {id:'mini',   name:'珍珠', price:0},
+  {id:'oat',    name:'燕麥', price:0},
+  {id:'coconut',name:'椰果', price:0},
 ];
 const SUGAR = [{n:'無糖',p:'0%'},{n:'微糖',p:'25%'},{n:'半糖',p:'50%'},{n:'少糖',p:'70%'},{n:'全糖',p:'100%'}];
 const ICE   = [{n:'溫熱',p:'',hot:true},{n:'去冰',p:'0%'},{n:'微冰',p:'40%'},{n:'少冰',p:'70%'},{n:'正常冰',p:'100%'}];
@@ -167,12 +169,4 @@ const ICE   = [{n:'溫熱',p:'',hot:true},{n:'去冰',p:'0%'},{n:'微冰',p:'40%
 const I = (name,m,l,f='') => ({name,m,l,rec:f.includes('r'),cold:f.includes('c')});
 const MENU = [
   {id:'tea', name:'找好茶', en:'Flavored Tea', items:[
-    I('茉莉綠茶',30,35), I('阿薩姆紅茶',30,35), I('四季春青茶',30,35,'r'), I('黃金烏龍',30,35),
-    I('珍波椰青茶',35,45,'r'), I('波霸紅茶',35,45), I('波霸綠茶',35,45),
-    I('燕麥紅茶',35,45), I('燕麥綠茶',35,45), I('微檸檬紅茶',35,45), I('微檸檬青茶',35,45),
-    I('麵茶紅茶',40,55), I('麵茶烏龍',40,55), I('檸檬綠茶',40,55), I('梅の綠茶',40,55),
-    I('8冰綠茶',40,55,'r'), I('情人茶',40,55,'r'),
-    I('多多綠茶',40,55,'c'), I('蜂蜜綠茶',40,55,'c'),
-    I('旺來紅茶',40,55,'r'), I('旺來青茶',40,55,'r'), I('柚子紅茶',40,55), I('柚子烏龍',40,55)
-  ]},
-  {id:
+    I('茉莉綠茶',30,35), I('阿薩姆紅茶',30,35), I
