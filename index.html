@@ -308,7 +308,7 @@ function renderOpts(){
   const ice   = section('冰量' + (it.cold ? ' <span class="font-normal text-sky-600">❄ 此品項不提供溫熱</span>' : ''),
     `<div class="chips">${ICE.map(s => chip('ice',s.n,s.n,s.p,d.ice===s.n, it.cold && s.hot)).join('')}</div>`);
   const tp = t => it.milk ? t.milk : t.tea;
-  const tops  = section('加料 <span class="font-normal text-slate-400">（可複選）</span> <span class="font-normal text-sky-600">' + (it.milk ? '奶類加料免費，布丁 +$15' : '茶類加料 +$10，布丁 +$15') + '</span>',
+  const tops  = section('加料 <span class="font-normal text-slate-400">（限選一種，再點一次取消）</span> <span class="font-normal text-sky-600">' + (it.milk ? '奶類加料免費，布丁 +$15' : '茶類加料 +$10，布丁 +$15') + '</span>',
     `<div class="chips">${TOPPINGS.map(t => chip('top',t.id,t.name,tp(t) ? '+$'+tp(t) : '免費',d.tops.has(t.id))).join('')}</div>`);
   $('#opts').innerHTML = size + sugar + ice + tops;
   $('#dQty').textContent = d.qty;
@@ -445,7 +445,7 @@ document.addEventListener('click', async e => {
   if (el.dataset.pick){
     const k = el.dataset.pick, v = el.dataset.v;
     if (k==='size' || k==='sugar' || k==='ice') draft[k] = v;
-    else if (k==='top'){ draft.tops.has(v) ? draft.tops.delete(v) : draft.tops.add(v); }
+    else if (k==='top'){ draft.tops = draft.tops.has(v) ? new Set() : new Set([v]); }  // 加料限選一種，再點一次取消
     renderOpts(); return;
   }
 
